@@ -15,6 +15,8 @@ class GA4ServiceProvider extends PackageServiceProvider
          * More info: https://github.com/spatie/laravel-package-tools
          */
         $package->name('laravel-google-analytics-4-measurement-protocol');
+
+        // Next step is to do config part
     }
 
     public function registeringPackage()
