@@ -18,6 +18,7 @@ function postClientId(clientId) {
 
     var xhr = new XMLHttpRequest();
     xhr.open('POST', 'store-google-analytics-client-id', true);
+    xhr.setRequestHeader('X-CSRF-TOKEN', '{{ csrf_token() }}');
     xhr.send(data);
 }
 
