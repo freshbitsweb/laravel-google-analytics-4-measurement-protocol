@@ -12,6 +12,14 @@ Install the package by running this command in your terminal/cmd:
 composer require freshbitsweb/laravel-google-analytics-4-measurement-protocol
 ```
 
+Set `GOOGLE_ANALYTICS_TRACKING_ID`, `MEASUREMENT_ID` and `MEASUREMENT_PROTOCOL_API_SECRET` in your .env file.
+You can get Measurement Protocol credentials from: Google Analytics > Admin > Data Streams > [Select Site] > Measurement Protocol API secrets
+
+Optional: If you wish to change the .env keys, you can publish the config file by running this command in your terminal/cmd:
+```bash
+php artisan vendor:publish --tag=laravel-google-analytics-4-measurement-protocol-config
+```
+
 ## Authors
 
 * [**Gaurav Makhecha**](https://github.com/gauravmak) - *Initial work*
