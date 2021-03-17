@@ -4,20 +4,28 @@
 A Laravel package to use [Measurement Protocol for Google Analytics 4](https://developers.google.com/analytics/devguides/collection/protocol/ga4).
 
 ## Introduction
-This package allows you to send events to Google Analytics 4 from your Laravel backend.
+This package allows you to post events to Google Analytics 4 from your Laravel backend.
 
 ## Installation
-Install the package by running this command in your terminal/cmd:
+1) Install the package by running this command in your terminal/cmd:
 ```bash
 composer require freshbitsweb/laravel-google-analytics-4-measurement-protocol
 ```
 
-Set `GOOGLE_ANALYTICS_TRACKING_ID`, `MEASUREMENT_ID` and `MEASUREMENT_PROTOCOL_API_SECRET` in your .env file.
-You can get Measurement Protocol credentials from: Google Analytics > Admin > Data Streams > [Select Site] > Measurement Protocol API secrets
+2) Set `MEASUREMENT_ID` and `MEASUREMENT_PROTOCOL_API_SECRET` in your .env file.
+You can get them from: Google Analytics > Admin > Data Streams > [Select Site] > Measurement Protocol API secrets
 
-Optional: If you wish to change the .env keys, you can publish the config file by running this command in your terminal/cmd:
+Optional: You can publish the config file by running this command in your terminal/cmd:
 ```bash
 php artisan vendor:publish --tag=laravel-google-analytics-4-measurement-protocol-config
+```
+
+3) Add a call to the package provided blade component which makes a POST request to the backend to store the client id in the session which is later used to post events to Google Analytics 4.
+
+```html
+<!-- Google Analytics Code -->
+<x-google-analytics-client-id />
+<!-- </head> -->
 ```
 
 ## Authors
