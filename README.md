@@ -20,13 +20,34 @@ Optional: You can publish the config file by running this command in your termin
 php artisan vendor:publish --tag=laravel-google-analytics-4-measurement-protocol-config
 ```
 
-3) Add a call to the package provided blade component which makes a POST request to the backend to store the client id in the session which is later used to post events to Google Analytics 4.
+3) `client_id` is required to post an event to Google Analytics. This package provides a Blade component which you can put in your layout file after the Google Analytics Code tracking code. It makes a POST request to the backend to store the client id in the session which is later used to post events to Google Analytics 4.
 
 ```html
 <!-- Google Analytics Code -->
 <x-google-analytics-client-id />
 <!-- </head> -->
 ```
+
+The other option is to call the `setClientId($clientId)` method on the `GA4` facade everytime before calling the `postEvent()` method.
+
+## Usage
+
+You can simple call `GA4::postEvent($eventData)` from anywhere in your backend to post event to Google Analytics 4. `$eventData` contains the name and params of the event as per this [reference page](https://developers.google.com/analytics/devguides/collection/protocol/ga4/reference/events#login). For example:
+
+```php
+GA4::postEvent([
+    'name' => 'login',
+    'params' => [
+        'method' => 'Google',
+    ],
+]);
+```
+
+`postEvent()` method will return an array with the status of the request.
+
+### Debugging Mode
+
+You can also enable [debugging mode](https://developers.google.com/analytics/devguides/collection/protocol/ga4/validating-events) by calling `enableDebugging()` method before calling the `postEvent()` method. Like so - `GA4::enableDebugging()->postEvent($eventData)`. The `postEvent()` method will return the response (array) from Google Analytics request in that case.
 
 ## Authors
 
