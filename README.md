@@ -15,12 +15,12 @@ composer require freshbitsweb/laravel-google-analytics-4-measurement-protocol
 2) Set `MEASUREMENT_ID` and `MEASUREMENT_PROTOCOL_API_SECRET` in your .env file.
 You can get them from: Google Analytics > Admin > Data Streams > [Select Site] > Measurement Protocol API secrets
 
-Optional: You can publish the config file by running this command in your terminal/cmd:
+3) Optional: You can publish the config file by running this command in your terminal/cmd:
 ```bash
-php artisan vendor:publish --tag=laravel-google-analytics-4-measurement-protocol-config
+php artisan vendor:publish --tag=google-analytics-4-measurement-protocol-config
 ```
 
-3) `client_id` is required to post an event to Google Analytics. This package provides a Blade component which you can put in your layout file after the Google Analytics Code tracking code. It makes a POST request to the backend to store the client id in the session which is later used to post events to Google Analytics 4.
+4) `client_id` is required to post an event to Google Analytics. This package provides a Blade component which you can put in your layout file after the Google Analytics Code tracking code. It makes a POST request to the backend to store the client id in the session which is later used to post events to Google Analytics 4.
 
 ```html
 <!-- Google Analytics Code -->
