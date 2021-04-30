@@ -22,7 +22,7 @@ class GA4ServiceProvider extends PackageServiceProvider
             ->hasRoute('web');
     }
 
-    public function registeringPackage():void
+    public function registeringPackage(): void
     {
         $this->app->bind('ga4', function () {
             if (config('google-analytics-4-measurement-protocol.measurement_id') === null
