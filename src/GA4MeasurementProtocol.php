@@ -2,22 +2,29 @@
 
 namespace Freshbitsweb\LaravelGoogleAnalytics4MeasurementProtocol;
 
+use Closure;
 use Exception;
 use Illuminate\Support\Facades\Http;
 
 class GA4MeasurementProtocol
 {
+    protected string $measurementId;
+
+    protected string $apiSecret;
+
+    protected Closure $clientIdResolver;
+
     private string $clientId = '';
 
     private bool $debugging = false;
 
-    public function __construct()
+    public function __construct(string $measurementId, string $apiSecret, Closure $clientIdResolver = null)
     {
-        if (config('google-analytics-4-measurement-protocol.measurement_id') === null
-            || config('google-analytics-4-measurement-protocol.api_secret') === null
-        ) {
-            throw new Exception('Please set .env variables for Google Analytics 4 Measurement Protocol as per the readme file first.');
-        }
+        $this->measurementId = $measurementId;
+        $this->apiSecret = $apiSecret;
+        $this->clientIdResolver = $clientIdResolver ?? static function () {
+                throw new Exception('Please set clientId resolver or specify clientId manually.');
+            };
     }
 
     public function setClientId(string $clientId): self
@@ -34,29 +41,31 @@ class GA4MeasurementProtocol
         return $this;
     }
 
-    public function postEvent(array $eventData): array
+    public function post(array $payload): array
     {
-        if (!$this->clientId && !$this->clientId = session(config('google-analytics-4-measurement-protocol.client_id_session_key'))) {
-            throw new Exception('Please use the package provided blade directive or set client_id manually before posting an event.');
-        }
-
         $response = Http::withOptions([
             'query' => [
-                'measurement_id' => config('google-analytics-4-measurement-protocol.measurement_id'),
-                'api_secret' => config('google-analytics-4-measurement-protocol.api_secret'),
+                'measurement_id' => $this->measurementId,
+                'api_secret' => $this->apiSecret,
             ],
-        ])->post($this->getRequestUrl(), [
-            'client_id' => $this->clientId,
-            'events' => [$eventData],
-        ]);
+        ])->post($this->getRequestUrl(), array_merge($payload, [
+            'client_id' => $this->clientId ?: ($this->clientIdResolver)(),
+        ]));
 
         if ($this->debugging) {
             return $response->json();
         }
 
         return [
-            'status' => $response->successful()
+            'status' => $response->successful(),
         ];
+    }
+
+    public function postEvent(array $eventData, array $payload = []): array
+    {
+        return $this->post(array_merge($payload, [
+            'events' => [$eventData],
+        ]));
     }
 
     private function getRequestUrl(): string
