@@ -8,26 +8,37 @@ use Illuminate\Support\Facades\Http;
 
 class GA4MeasurementProtocol
 {
+    /**
+     * @var string|Closure
+     */
+    private $clientId;
+
     protected string $measurementId;
 
     protected string $apiSecret;
 
-    protected Closure $clientIdResolver;
-
-    private string $clientId = '';
-
     private bool $debugging = false;
 
-    public function __construct(string $measurementId, string $apiSecret, Closure $clientIdResolver = null)
+    /**
+     * GA4MeasurementProtocol constructor.
+     * @param  string  $measurementId
+     * @param  string  $apiSecret
+     * @param  string|Closure  $clientId
+     */
+    public function __construct(string $measurementId, string $apiSecret, $clientId = null)
     {
         $this->measurementId = $measurementId;
         $this->apiSecret = $apiSecret;
-        $this->clientIdResolver = $clientIdResolver ?? static function () {
-                throw new Exception('Please set clientId resolver or specify clientId manually.');
-            };
+        $this->setClientId($clientId ?? static function () {
+                throw new Exception('Please specify clientId manually.');
+            });
     }
 
-    public function setClientId(string $clientId): self
+    /**
+     * @param string|Closure $clientId
+     * @return $this
+     */
+    public function setClientId($clientId): self
     {
         $this->clientId = $clientId;
 
@@ -41,31 +52,25 @@ class GA4MeasurementProtocol
         return $this;
     }
 
-    public function post(array $payload): array
+    public function postEvent(array $eventData): array
     {
         $response = Http::withOptions([
             'query' => [
                 'measurement_id' => $this->measurementId,
                 'api_secret' => $this->apiSecret,
             ],
-        ])->post($this->getRequestUrl(), array_merge($payload, [
-            'client_id' => $this->clientId ?: ($this->clientIdResolver)(),
-        ]));
+        ])->post($this->getRequestUrl(), [
+            'client_id' => $this->clientId instanceof Closure ? ($this->clientId)() : $this->clientId,
+            'events' => [$eventData],
+        ]);
 
         if ($this->debugging) {
             return $response->json();
         }
 
         return [
-            'status' => $response->successful(),
+            'status' => $response->successful()
         ];
-    }
-
-    public function postEvent(array $eventData, array $payload = []): array
-    {
-        return $this->post(array_merge($payload, [
-            'events' => [$eventData],
-        ]));
     }
 
     private function getRequestUrl(): string
