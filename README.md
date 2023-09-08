@@ -6,6 +6,12 @@ A Laravel package to use [Measurement Protocol for Google Analytics 4](https://d
 ## Introduction
 This package allows you to post events to Google Analytics 4 from your Laravel backend.
 
+## Supported Laravel versions
+- Laravel 7.x
+- Laravel 8.x
+- Laravel 9.x
+- Laravel 10.x
+
 ## Installation
 1) Install the package by running this command in your terminal/cmd:
 ```bash
