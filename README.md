@@ -12,6 +12,7 @@ This package allows you to post events to Google Analytics 4 from your Laravel b
 - Laravel 9.x
 - Laravel 10.x
 - Laravel 11.x
+- Laravel 12.x
 
 ## Installation
 1) Install the package by running this command in your terminal/cmd:

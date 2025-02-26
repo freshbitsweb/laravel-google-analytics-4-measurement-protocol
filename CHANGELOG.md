@@ -2,6 +2,9 @@
 
 All notable changes to `:package_name` will be documented in this file.
 
+## 2.0.0 - 2025-02-26
+- Support for Laravel 12
+
 ## 1.3.0 - 2025-01-06
 - Support for Laravel 11
 
