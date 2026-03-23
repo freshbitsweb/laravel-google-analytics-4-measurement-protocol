@@ -2,25 +2,43 @@
 
 namespace Freshbitsweb\LaravelGoogleAnalytics4MeasurementProtocol;
 
+use Closure;
 use Exception;
 use Illuminate\Support\Facades\Http;
 
 class GA4MeasurementProtocol
 {
-    private string $clientId = '';
+    /**
+     * @var string|Closure
+     */
+    private $clientId;
+
+    protected string $measurementId;
+
+    protected string $apiSecret;
 
     private bool $debugging = false;
 
-    public function __construct()
+    /**
+     * GA4MeasurementProtocol constructor.
+     * @param  string  $measurementId
+     * @param  string  $apiSecret
+     * @param  string|Closure  $clientId
+     */
+    public function __construct(string $measurementId, string $apiSecret, $clientId = null)
     {
-        if (config('google-analytics-4-measurement-protocol.measurement_id') === null
-            || config('google-analytics-4-measurement-protocol.api_secret') === null
-        ) {
-            throw new Exception('Please set .env variables for Google Analytics 4 Measurement Protocol as per the readme file first.');
-        }
+        $this->measurementId = $measurementId;
+        $this->apiSecret = $apiSecret;
+        $this->setClientId($clientId ?? static function () {
+                throw new Exception('Please specify clientId manually.');
+            });
     }
 
-    public function setClientId(string $clientId): self
+    /**
+     * @param string|Closure $clientId
+     * @return $this
+     */
+    public function setClientId($clientId): self
     {
         $this->clientId = $clientId;
 
@@ -36,17 +54,13 @@ class GA4MeasurementProtocol
 
     public function postEvent(array $eventData): array
     {
-        if (!$this->clientId && !$this->clientId = session(config('google-analytics-4-measurement-protocol.client_id_session_key'))) {
-            throw new Exception('Please use the package provided blade directive or set client_id manually before posting an event.');
-        }
-
         $response = Http::withOptions([
             'query' => [
-                'measurement_id' => config('google-analytics-4-measurement-protocol.measurement_id'),
-                'api_secret' => config('google-analytics-4-measurement-protocol.api_secret'),
+                'measurement_id' => $this->measurementId,
+                'api_secret' => $this->apiSecret,
             ],
         ])->post($this->getRequestUrl(), [
-            'client_id' => $this->clientId,
+            'client_id' => $this->clientId instanceof Closure ? ($this->clientId)() : $this->clientId,
             'events' => [$eventData],
         ]);
 
